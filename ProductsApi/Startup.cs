@@ -52,7 +52,7 @@ namespace ProductsApi
             app.UseMiddleware<ErrorLoggingMiddleware>();
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/products/v1/swagger.json", "AdventureWorks Products API v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AdventureWorks Products API v1"));
 
             app.UseHttpsRedirection();
 
