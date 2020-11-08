@@ -27,7 +27,7 @@ namespace ProductsApi
             Configuration = configuration;
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console()
-                .WriteTo.File("logs\\myapp.txt", rollingInterval: RollingInterval.Day)
+                .WriteTo.File("logs\\events.log", rollingInterval: RollingInterval.Day)
                 .CreateLogger();
         }
 
