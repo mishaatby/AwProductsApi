@@ -25,7 +25,7 @@ namespace ProductsApi.Middleware
             catch (Exception e)
             {
                 System.Diagnostics.Trace.TraceError("Unhandled exception: {0}", e.Message);
-                Log.Logger.Error("problem occurred: {0}", e.Message);
+                Log.Logger.Error("Problem occurred: {0}", e.Message);
                 throw;
             }
         }
