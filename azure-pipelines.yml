@@ -14,7 +14,7 @@ variables:
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-stages
+stages:
 
 - stage: Build
   displayName: Build stage
