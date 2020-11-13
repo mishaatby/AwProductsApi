@@ -47,9 +47,8 @@ stages:
   - deployment: deploy_to_env
     displayName: deploy jobs
     environment: test
-  - job: deploy
-    displayName: deplay job
     steps:
+    - checkout: none
 
     - task: DownloadBuildArtifacts@0
       inputs:
