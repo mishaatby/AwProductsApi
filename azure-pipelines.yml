@@ -61,17 +61,14 @@ stages:
         appType: 'webApp'
         WebAppName: 'product-api-mrafalovich'
         Package: '$(System.ArtifactsDirectory)\**\WebApp.zip'
-        AdditionalArguments: 
-  - job: deploy_to_dtl
-    displayName: deploy to dtl
-    steps:
+
     - task: AzureRmWebAppDeployment@4
       inputs:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Visual Studio Professional Subscription (5b8d26c7-8daa-466e-8c33-140bebed7b9e)'
         appType: 'webApp'
         WebAppName: 'qth-qthzjq'
-        Package: '$(build.artifactStagingDirectory)\WebApp.zip'
+        Package: '$(System.ArtifactsDirectory)\**\WebApp.zip'
 
 
 
