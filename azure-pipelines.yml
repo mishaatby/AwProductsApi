@@ -28,13 +28,21 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
+
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'AzureRM'
     azureSubscription: 'Visual Studio Professional Subscription (5b8d26c7-8daa-466e-8c33-140bebed7b9e)'
     appType: 'webApp'
     WebAppName: 'product-api-mrafalovich'
-    packageForLinux: '$(Build.BinariesDirectory)'
+    Package: '$(build.artifactStagingDirectory)\WebApp.zip'
+    AdditionalArguments: 
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
 
 - task: ArchiveFiles@2
   inputs:
