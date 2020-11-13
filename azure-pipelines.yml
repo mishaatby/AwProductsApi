@@ -46,8 +46,10 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'drop'
         publishLocation: 'Container'
+
   - job: archive
     displayName: archive job
+    steps:
     - task: ArchiveFiles@2
       inputs:
         rootFolderOrFile: '$(Build.BinariesDirectory)'
