@@ -47,23 +47,25 @@ stages:
   - deployment: deploy_to_env
     displayName: deploy jobs
     environment: test
-    steps:
-    - checkout: none
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'webAppPackage'
-        downloadPath: '$(System.ArtifactsDirectory)'
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'webAppPackage'
+              downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: AzureRmWebAppDeployment@4
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'Visual Studio Professional Subscription (5b8d26c7-8daa-466e-8c33-140bebed7b9e)'
-        appType: 'webApp'
-        WebAppName: $(targetWebAppName)
-        Package: '$(System.ArtifactsDirectory)\**\WebApp.zip'
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Visual Studio Professional Subscription (5b8d26c7-8daa-466e-8c33-140bebed7b9e)'
+              appType: 'webApp'
+              WebAppName: $(targetWebAppName)
+              Package: '$(System.ArtifactsDirectory)\**\WebApp.zip'
 
 
 
