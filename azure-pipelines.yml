@@ -13,6 +13,7 @@ variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  targetWebAppName: 'qth-qthzjq'
 
 stages:
 
@@ -37,7 +38,7 @@ stages:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
+        ArtifactName: 'webAppPackage'
         publishLocation: 'Container'
 
 - stage: Deploy
@@ -51,7 +52,7 @@ stages:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: 'drop'
+        artifactName: 'webAppPackage'
         downloadPath: '$(System.ArtifactsDirectory)'
 
     - task: AzureRmWebAppDeployment@4
@@ -59,15 +60,7 @@ stages:
         ConnectionType: 'AzureRM'
         azureSubscription: 'Visual Studio Professional Subscription (5b8d26c7-8daa-466e-8c33-140bebed7b9e)'
         appType: 'webApp'
-        WebAppName: 'product-api-mrafalovich'
-        Package: '$(System.ArtifactsDirectory)\**\WebApp.zip'
-
-    - task: AzureRmWebAppDeployment@4
-      inputs:
-        ConnectionType: 'AzureRM'
-        azureSubscription: 'Visual Studio Professional Subscription (5b8d26c7-8daa-466e-8c33-140bebed7b9e)'
-        appType: 'webApp'
-        WebAppName: 'qth-qthzjq'
+        WebAppName: $(targetWebAppName)
         Package: '$(System.ArtifactsDirectory)\**\WebApp.zip'
 
 
