@@ -44,6 +44,9 @@ stages:
 - stage: Deploy
   displayName: Deploy stage
   jobs:
+  - deployment: deploy
+    displayName: deploy jobs
+    environment: test
   - job: deploy
     displayName: deplay job
     steps:
