@@ -23,6 +23,20 @@ stages:
   - job: build
     displayName: build job
     steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Install .NET Core tools from local manifest'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'restore --tool-manifest $(Build.SourcesDirectory)/ProductsApi/.config/dotnet-tools.json'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Check tools'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'list'
+        
     - task: NuGetToolInstaller@1
 
     - task: NuGetCommand@2
@@ -51,19 +65,7 @@ stages:
         custom: tool
         arguments: 'install dotnet-reportgenerator-globaltool'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Install .NET Core tools from local manifest'
-      inputs:
-        command: custom
-        custom: tool
-        arguments: 'restore --tool-manifest $(Build.SourcesDirectory)/ProductsApi/.config/dotnet-tools.json'
 
-    - task: DotNetCoreCLI@2
-      displayName: 'Check tools'
-      inputs:
-        command: custom
-        custom: tool
-        arguments: 'list'
 
     - task: DotNetCoreCLI@2
       displayName: 'Create code coverage report'
