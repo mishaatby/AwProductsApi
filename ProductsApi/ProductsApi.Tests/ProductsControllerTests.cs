@@ -31,6 +31,7 @@ namespace ProductsApi.Tests
             };
         }
 
+        [Test]
         public async Task Get_ReturnsNoResult_WhenIdIsNotFoundAsync()
         {
             var mockDbContext = new Mock<AwDbContext>();
