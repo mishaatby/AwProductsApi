@@ -23,26 +23,6 @@ stages:
   - job: build
     displayName: build job
     steps:
-    - task: DotNetCoreCLI@2
-      displayName: 'Check tools'
-      inputs:
-        command: custom
-        custom: tool
-        arguments: 'list'
-        workingDirectory: '$(Build.SourcesDirectory)/ProductsApi'
-    - task: DotNetCoreCLI@2
-      displayName: 'Install .NET Core tools from local manifest'
-      inputs:
-        command: custom
-        custom: tool
-        arguments: 'restore --tool-manifest $(Build.SourcesDirectory)/ProductsApi/.config/dotnet-tools.json'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Check tools'
-      inputs:
-        command: custom
-        custom: tool
-        arguments: 'list'
 
     - task: NuGetToolInstaller@1
 
@@ -64,6 +44,13 @@ stages:
         arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/ /p:Exclude="[*]ProductsApi.Models"'
         publishTestResults: true
         projects: '**/*.Tests.csproj'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Install .NET Core tools from local manifest'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'restore --tool-manifest $(Build.SourcesDirectory)/ProductsApi/.config/dotnet-tools.json'
 
     - task: DotNetCoreCLI@2
       displayName: 'Create code coverage report'
@@ -96,13 +83,6 @@ stages:
         deploy:
           steps:
 
-  #        - task: DownloadBuildArtifacts@0
-  #          inputs:
-  #            buildType: 'current'
-  #            downloadType: 'single'
-  #            artifactName: 'webAppPackage'
-  #            downloadPath: '$(System.ArtifactsDirectory)'
-
           - task: AzureRmWebAppDeployment@4
             inputs:
               ConnectionType: 'AzureRM'
@@ -111,10 +91,3 @@ stages:
               WebAppName: $(targetWebAppName)
               #Package: '$(System.ArtifactsDirectory)\**\WebApp.zip'
               Package: '$(Pipeline.Workspace)\**\WebApp.zip'
-
-
-
-#- task: VSTest@2
-#  inputs:
-#    platform: '$(buildPlatform)'
-#    configuration: '$(buildConfiguration)'
