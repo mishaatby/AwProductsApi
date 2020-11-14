@@ -45,6 +45,13 @@ stages:
         projects: '**/*.Tests.csproj'
 
     - task: DotNetCoreCLI@2
+      displayName: 'install -g dotnet-reportgenerator-globaltool'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'install dotnet-reportgenerator-globaltool'
+
+    - task: DotNetCoreCLI@2
       displayName: 'Install .NET Core tools from local manifest'
       inputs:
         command: custom
