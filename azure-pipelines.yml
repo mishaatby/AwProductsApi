@@ -23,6 +23,27 @@ stages:
   - job: build
     displayName: build job
     steps:
+    - task: DotNetCoreCLI@2
+      displayName: 'Check tools'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'list'
+        workingDirectory: '$(Build.SourcesDirectory)/ProductsApi'
+    - task: DotNetCoreCLI@2
+      displayName: 'Install .NET Core tools from local manifest'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'restore --tool-manifest $(Build.SourcesDirectory)/ProductsApi/.config/dotnet-tools.json'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Check tools'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'list'
+
     - task: NuGetToolInstaller@1
 
     - task: NuGetCommand@2
@@ -35,13 +56,6 @@ stages:
         msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
-
-    - task: DotNetCoreCLI@2
-      displayName: 'Install .NET Core tools from local manifest'
-      inputs:
-        command: custom
-        custom: tool
-        arguments: 'restore --tool-manifest $(Build.SourcesDirectory)/**/.config/dotnet-tools.json'
 
     - task: DotNetCoreCLI@2
       displayName: 'Run unit tests - $(buildConfiguration)'
@@ -57,6 +71,7 @@ stages:
         command: custom
         custom: tool
         arguments: 'run reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines'
+        workingDirectory: '$(Build.SourcesDirectory)/ProductsApi'
 
     - task: PublishCodeCoverageResults@1
       displayName: 'Publish code coverage report'
