@@ -24,6 +24,12 @@ stages:
     displayName: build job
     steps:
     - task: DotNetCoreCLI@2
+      displayName: 'Check tools'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'list'
+    - task: DotNetCoreCLI@2
       displayName: 'Install .NET Core tools from local manifest'
       inputs:
         command: custom
@@ -36,7 +42,7 @@ stages:
         command: custom
         custom: tool
         arguments: 'list'
-        
+
     - task: NuGetToolInstaller@1
 
     - task: NuGetCommand@2
