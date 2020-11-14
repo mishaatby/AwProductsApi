@@ -1,0 +1,93 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  solution: '**/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  targetWebAppName: 'qth-qthzjq'
+
+stages:
+
+- stage: Build
+  displayName: Build stage
+  jobs:
+  - job: build
+    displayName: build job
+    steps:
+
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
+
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Run unit tests - $(buildConfiguration)'
+      inputs:
+        command: 'test'
+        arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/ /p:Exclude="[*]ProductsApi.Models"'
+        publishTestResults: true
+        projects: '**/*.Tests.csproj'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Install .NET Core tools from local manifest'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'restore --tool-manifest $(Build.SourcesDirectory)/ProductsApi/.config/dotnet-tools.json'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Create code coverage report'
+      inputs:
+        command: custom
+        custom: tool
+        arguments: 'run reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines'
+        workingDirectory: '$(Build.SourcesDirectory)/ProductsApi'
+
+    - task: PublishCodeCoverageResults@1
+      displayName: 'Publish code coverage report'
+      inputs:
+        codeCoverageTool: 'cobertura'
+        summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'webAppPackage'
+        publishLocation: 'Container'
+
+- stage: Deploy
+  displayName: Deploy stage
+  jobs:
+  - deployment: deploy_to_env
+    displayName: deploy jobs
+    environment: test
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: 'AzureRM'
+              azureSubscription: 'Visual Studio Professional Subscription (5b8d26c7-8daa-466e-8c33-140bebed7b9e)'
+              appType: 'webApp'
+              WebAppName: $(targetWebAppName)
+              #Package: '$(System.ArtifactsDirectory)\**\WebApp.zip'
+              Package: '$(Pipeline.Workspace)\**\WebApp.zip'
