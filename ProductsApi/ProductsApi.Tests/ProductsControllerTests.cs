@@ -19,7 +19,7 @@ namespace ProductsApi.Tests
 
             var controller = new ProductsApi.Controllers.ProductsController(mockDbContext.Object);
             var result = await controller.DeleteProduct(123);
-            Assert.IsInstanceOf(typeof(Microsoft.AspNetCore.Mvc.NotFoundResult), result);
+            Assert.IsInstanceOf(typeof(Microsoft.AspNetCore.Mvc.NotFoundResult), result.Result);
         }
 
     }
