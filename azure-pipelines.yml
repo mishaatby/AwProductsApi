@@ -29,6 +29,7 @@ stages:
         command: custom
         custom: tool
         arguments: 'list'
+        workingDirectory: '$(Build.SourcesDirectory)/ProductsApi'
     - task: DotNetCoreCLI@2
       displayName: 'Install .NET Core tools from local manifest'
       inputs:
@@ -65,20 +66,12 @@ stages:
         projects: '**/*.Tests.csproj'
 
     - task: DotNetCoreCLI@2
-      displayName: 'install -g dotnet-reportgenerator-globaltool'
-      inputs:
-        command: custom
-        custom: tool
-        arguments: 'install dotnet-reportgenerator-globaltool'
-
-
-
-    - task: DotNetCoreCLI@2
       displayName: 'Create code coverage report'
       inputs:
         command: custom
         custom: tool
         arguments: 'run reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:HtmlInline_AzurePipelines'
+        workingDirectory: '$(Build.SourcesDirectory)/ProductsApi'
 
     - task: PublishCodeCoverageResults@1
       displayName: 'Publish code coverage report'
