@@ -37,6 +37,14 @@ stages:
         configuration: '$(buildConfiguration)'
 
     - task: DotNetCoreCLI@2
+      displayName: 'Run unit tests - $(buildConfiguration)'
+      inputs:
+        command: 'test'
+        arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
+        publishTestResults: true
+        projects: '**/*.Tests.csproj'
+
+    - task: DotNetCoreCLI@2
       displayName: 'Install .NET Core tools from local manifest'
       inputs:
         command: custom
@@ -44,12 +52,11 @@ stages:
         arguments: 'restore --tool-manifest $(Build.SourcesDirectory)/ProductsApi/.config/dotnet-tools.json'
 
     - task: DotNetCoreCLI@2
-      displayName: 'Run unit tests - $(buildConfiguration)'
+      displayName: 'Check tools'
       inputs:
-        command: 'test'
-        arguments: '--no-build --configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(Build.SourcesDirectory)/TestResults/Coverage/'
-        publishTestResults: true
-        projects: '**/*.Tests.csproj'
+        command: custom
+        custom: tool
+        arguments: '--help'
 
     - task: DotNetCoreCLI@2
       displayName: 'Create code coverage report'
